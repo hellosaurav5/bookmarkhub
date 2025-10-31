@@ -92,11 +92,17 @@ export const useBookmarksStore = create<BookmarksState>((set, get) => ({
     const oldVoteCount = bookmark.voteCount;
     const oldUserVote = bookmark.userVote || null;
 
-    // Determine final vote type (toggle logic)
+    // Determine final vote type based on specification:
+    // - Same button clicked = remove vote
+    // - Opposite button clicked = switch vote
     let finalVoteType = voteType;
+    
     if (bookmark.userVote === voteType) {
-      finalVoteType = 0; // Remove vote
+      // Clicking same button - remove vote
+      finalVoteType = 0;
     }
+    // If there's an existing vote and it's different, send the new vote type
+    // The backend and optimistic update will handle the switch
 
     // Optimistically update UI
     get().optimisticVote(bookmarkId, finalVoteType);
